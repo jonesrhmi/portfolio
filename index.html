@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jones Rahimi – Maschinenbauingenieur</title>
+<meta name="description" content="Portfolio von Jones Rahimi: Maschinenbauingenieur mit Schwerpunkt Prozessoptimierung, Produktionstechnik und Operational Excellence.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d13; --panel:#10151f; --panel2:#151b27; --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --text:#e9edf3; --muted:#98a2b4; --acc:#f5b042; --acc-soft:rgba(245,176,66,.12);
+  --maxw:1180px; --gut:clamp(18px,4vw,40px);
+  --display:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.65 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:72px 72px;opacity:.45;-webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 78%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 78%)}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;letter-spacing:-.02em}
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.mono{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.acc{color:var(--acc)}
+
+/* Navigation */
+.progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--acc);transform-origin:0 50%;transform:scaleX(0);z-index:60}
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.scrolled .nav{background:rgba(10,13,19,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.brand{font:600 17px var(--display);letter-spacing:-.01em;white-space:nowrap}
+.brand span{color:var(--acc)}
+.nav nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav nav::-webkit-scrollbar{display:none}
+.nav nav a{padding:8px 12px;border-radius:999px;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .2s,background .2s}
+.nav nav a:hover,.nav nav a.active{color:var(--text);background:rgba(255,255,255,.06)}
+.nav nav a.cta{color:#17120a;background:var(--acc);font-weight:600}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;font-weight:600;font-size:15px;border:1px solid var(--line2);transition:transform .2s,background .2s,border-color .2s}
+.btn:hover{transform:translateY(-2px);border-color:var(--acc)}
+.btn.primary{background:var(--acc);color:#17120a;border-color:var(--acc)}
+.btn svg{width:16px;height:16px}
+
+/* Hero */
+.hero{min-height:100svh;display:flex;align-items:center;padding:110px 0 60px}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(32px,6vw,84px);align-items:center}
+.hero h1{font-size:clamp(52px,9.4vw,128px);font-weight:700;margin:18px 0 22px;letter-spacing:-.045em}
+.hero h1 em{font-style:normal;color:var(--acc)}
+.role{font:500 clamp(18px,2.1vw,24px)/1.35 var(--display)}
+.lede{color:var(--muted);max-width:54ch;margin-top:14px;font-size:17px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.portrait{position:relative;justify-self:end;width:min(100%,390px)}
+.portrait img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;object-position:50% 18%;border-radius:22px;border:1px solid var(--line2)}
+.portrait::before{content:"";position:absolute;inset:18px -18px -18px 18px;border:1px solid var(--acc);border-radius:22px;z-index:-1;opacity:.7}
+.portrait figcaption{position:absolute;left:14px;bottom:14px;padding:8px 12px;border-radius:999px;background:rgba(10,13,19,.72);backdrop-filter:blur(8px);font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.portrait figcaption i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:8px}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(40px,6vw,72px);border:1px solid var(--line);border-radius:18px;background:rgba(16,21,31,.72);overflow:hidden}
+.fact{padding:22px 24px;border-left:1px solid var(--line)}
+.fact:first-child{border-left:0}
+.fact b{display:block;font:700 clamp(26px,3vw,36px)/1 var(--display);letter-spacing:-.03em}
+.fact span{display:block;margin-top:8px;color:var(--muted);font-size:13.5px;line-height:1.4}
+
+/* Abschnitte */
+section{padding:clamp(72px,10vw,128px) 0}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:10px 28px;align-items:end;margin-bottom:clamp(36px,5vw,64px)}
+.sec-head h2{font-size:clamp(34px,5vw,60px);font-weight:600;grid-column:1/-1}
+.sec-head p{color:var(--muted);max-width:62ch;grid-column:1/-1}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* Stationen */
+.station{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px);align-items:center;padding:clamp(28px,4vw,48px) 0;border-top:1px solid var(--line)}
+.station:nth-of-type(even) .stage{order:-1}
+.station h3{font-size:clamp(28px,3.6vw,44px);font-weight:600;margin:12px 0 6px}
+.station .pos{font:500 17px var(--display);color:var(--text)}
+.station .focus{color:var(--muted);margin:14px 0 18px;padding-left:14px;border-left:2px solid var(--acc)}
+.bul li{position:relative;padding:7px 0 7px 22px;color:#cdd4df;font-size:15.5px;line-height:1.55}
+.bul li::before{content:"";position:absolute;left:2px;top:17px;width:8px;height:1px;background:var(--acc)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tags span{padding:5px 11px;border:1px solid var(--line2);border-radius:999px;font:500 11.5px var(--mono);color:var(--muted);letter-spacing:.04em}
+.stage{position:relative;aspect-ratio:1/1;max-height:540px;width:100%;border-radius:24px;border:1px solid var(--line);
+  background:radial-gradient(circle at 50% 42%,rgba(245,176,66,.10),transparent 58%),linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden}
+.stage canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y}
+.stage.is-dragging canvas{cursor:grabbing}
+.stage .cap{position:absolute;left:18px;top:16px;pointer-events:none}
+.stage .hint{position:absolute;right:18px;bottom:16px;pointer-events:none;display:flex;align-items:center;gap:8px}
+.stage .hint svg{width:15px;height:15px}
+.stage .note{position:absolute;left:18px;top:40px;max-width:70%;font-size:12.5px;line-height:1.4;color:var(--muted);pointer-events:none}
+.stage .note i{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--acc);margin-right:7px}
+.stage.no-webgl::after{content:"3D-Ansicht in diesem Browser nicht verfügbar";position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px}
+
+/* Projekte */
+.feature{display:grid;grid-template-columns:1.1fr .9fr;gap:0;border:1px solid var(--line2);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.feature>div{padding:clamp(24px,3.4vw,44px)}
+.feature .side{border-left:1px solid var(--line);background:rgba(245,176,66,.04)}
+.feature h3{font-size:clamp(26px,3.2vw,38px);margin:12px 0 14px;font-weight:600}
+.feature p{color:#cdd4df}
+.kv{display:grid;gap:22px}
+.kv h4{margin:0 0 6px;font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.kv p,.kv li{color:#cdd4df;font-size:15.5px}
+.kv li{padding:3px 0 3px 18px;position:relative}
+.kv li::before{content:"";position:absolute;left:0;top:14px;width:8px;height:1px;background:var(--acc)}
+.pending{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:1px dashed var(--line2);border-radius:999px;color:var(--muted);font-size:14px;margin-top:24px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+.card{padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);transition:border-color .25s,transform .25s}
+.card:hover{border-color:var(--line2);transform:translateY(-3px)}
+.card h3{font-size:21px;font-weight:600;margin:10px 0 10px;letter-spacing:-.01em}
+.card p{color:#c3cbd8;font-size:15px}
+
+/* Ausbildung */
+.edu{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.edu .card h3{font-size:24px}
+.edu .thesis{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:14.5px}
+
+/* Skills */
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.skills .card .tags{margin-top:14px}
+.skills .tags span{color:#cdd4df}
+.extra{display:grid;grid-template-columns:1fr 1.4fr;gap:18px;margin-top:18px}
+.lang li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.lang li:last-child{border:0}
+.lang span{color:var(--muted)}
+
+/* Dokumente */
+.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.doc{display:flex;flex-direction:column;gap:10px;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);transition:border-color .25s,transform .25s}
+.doc:hover{border-color:var(--acc);transform:translateY(-3px)}
+.doc svg{width:30px;height:30px;color:var(--acc)}
+.doc b{font:600 20px var(--display)}
+.doc span{color:var(--muted);font-size:14.5px}
+.doc em{font-style:normal;margin-top:auto;padding-top:14px;color:var(--acc);font-weight:600;font-size:14.5px}
+
+/* Kontakt */
+.contact{text-align:center}
+.contact h2{font-size:clamp(40px,7vw,92px);font-weight:700;letter-spacing:-.04em}
+.contact p{color:var(--muted);max-width:52ch;margin:18px auto 30px}
+.contact .hero-actions{justify-content:center}
+footer{padding:28px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* PDF-Ansicht */
+dialog#pdf{width:min(980px,94vw);height:90vh;padding:0;border:1px solid var(--line2);border-radius:18px;background:var(--panel);color:var(--text);overflow:hidden}
+dialog#pdf::backdrop{background:rgba(4,6,10,.78);backdrop-filter:blur(4px)}
+.pdf-bar{display:flex;align-items:center;gap:14px;height:54px;padding:0 16px;border-bottom:1px solid var(--line)}
+.pdf-title{font:600 15px var(--display);margin-right:auto}
+.pdf-bar a,.pdf-bar button{font:500 13.5px var(--body);color:var(--muted);background:none;border:1px solid var(--line2);border-radius:999px;padding:7px 14px;cursor:pointer}
+.pdf-bar a:hover,.pdf-bar button:hover{color:var(--text);border-color:var(--acc)}
+dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
+
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}
+
+@media (max-width:960px){
+  .hero-grid{grid-template-columns:1fr}
+  .portrait{justify-self:start;width:min(72%,320px);order:-1}
+  .facts{grid-template-columns:repeat(2,1fr)}
+  .fact:nth-child(3){border-left:0}
+  .fact:nth-child(n+3){border-top:1px solid var(--line)}
+  .station{grid-template-columns:1fr}
+  .station:nth-of-type(even) .stage{order:0}
+  .stage{max-height:none}
+  .feature{grid-template-columns:1fr}
+  .feature .side{border-left:0;border-top:1px solid var(--line)}
+  .skills,.docs{grid-template-columns:1fr 1fr}
+  .extra{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .brand{display:none}
+  .nav nav{margin-left:0}
+  .cards,.edu,.skills,.docs{grid-template-columns:1fr}
+  .hero{padding-top:92px}
+  .portrait{width:min(58%,240px)}
+  .portrait::before{inset:12px -12px -12px 12px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#start">Jones Rahimi<span>.</span></a>
+    <nav aria-label="Hauptnavigation">
+      <a href="#erfahrung">Erfahrung</a>
+      <a href="#projekte">Projekte</a>
+      <a href="#ausbildung">Ausbildung</a>
+      <a href="#skills">Skills</a>
+      <a href="#dokumente">Dokumente</a>
+      <a class="cta" href="#kontakt">Kontakt</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ============ START ============ -->
+<section class="hero" id="start">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="mono"><span class="acc">●</span>&nbsp; Portfolio · Hamburg</p>
+        <h1>Jones<br>Rahimi<em>.</em></h1>
+        <p class="role">Maschinenbauingenieur · B.Sc., M.Sc. 01/2027</p>
+        <p class="lede">Prozessoptimierung, Produktionstechnik und Operational Excellence. Knapp drei Jahre Industriepraxis bei Lufthansa Technik, Philips und Abbott.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="docs/Jones_Rahimi_Lebenslauf.pdf" target="_blank" rel="noopener" data-pdf="Lebenslauf (Deutsch)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+            Lebenslauf ansehen</a>
+          <a class="btn" href="#erfahrung">Stationen in 3D
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+        </div>
+      </div>
+      <figure class="portrait">
+        <img src="assets/portrait.jpg" alt="Porträt von Jones Rahimi" width="605" height="807">
+        <figcaption><i></i>Verfügbar ab 1. Februar 2027</figcaption>
+      </figure>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><b>~3 Jahre</b><span>Industriepraxis in Fertigung, Instandhaltung und Qualität</span></div>
+      <div class="fact"><b>3 Konzerne</b><span>Lufthansa Technik, Philips, Abbott</span></div>
+      <div class="fact"><b>M.Sc. 01/2027</b><span>Produktionstechnik und -management, HAW Hamburg</span></div>
+      <div class="fact"><b>4 Sprachen</b><span>Deutsch, Persisch, Englisch, Arabisch</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ERFAHRUNG ============ -->
+<section id="erfahrung">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="mono"><span class="acc">01</span> &nbsp;Berufserfahrung</p>
+      <h2>Vier Stationen, vier Branchen.</h2>
+      <p>Luftfahrt, Medizintechnik, Laborautomatisierung, Motorsport. Jede Station hat ein 3D-Modell: mit der Maus oder dem Finger ziehen, um es zu drehen.</p>
+    </div>
+
+    <article class="station reveal">
+      <div>
+        <p class="mono">Nov 2025 – Jan 2027 · Hamburg</p>
+        <h3>Lufthansa Technik</h3>
+        <p class="pos">Werkstudent · Prozessoptimierung im Bereich Triebwerke</p>
+        <p class="focus">Anlagenverfügbarkeit, TPM und Prozessstandardisierung in der Triebwerksinstandhaltung.</p>
+        <ul class="bul">
+          <li>Stillstandsanalysen auf Basis von Störungsdaten, Ursachenanalyse mit 5-Why und Ishikawa, Ableitung von Abstellmaßnahmen</li>
+          <li>TPM-Einführung mitgestaltet, Schwerpunkt autonome Instandhaltung, Nachverfolgung im Maßnahmenplan</li>
+          <li>Reinigungs-, Inspektions- und Wartungsstandards für Öfen, Zerspanungs-, Lackier- und Metallbearbeitungsanlagen</li>
+          <li>Arbeitsanweisungen, digitale Schulungsunterlagen und Lernvideos; Qualifizierung von Produktionsmitarbeitenden</li>
+        </ul>
+        <div class="tags"><span>TPM</span><span>5-Why</span><span>Ishikawa</span><span>Standardarbeit</span><span>Shopfloor</span></div>
+      </div>
+      <div class="stage" data-model="plane">
+        <canvas aria-label="3D-Modell eines Verkehrsflugzeugs, drehbar"></canvas>
+        <p class="mono cap">Modell 01 · Twin-Jet</p>
+        <p class="note"><i></i>Triebwerke hervorgehoben: mein Arbeitsbereich</p>
+        <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
+      </div>
+    </article>
+
+    <article class="station reveal">
+      <div>
+        <p class="mono">Nov 2023 – Jul 2025 · Hamburg</p>
+        <h3>Philips</h3>
+        <p class="pos">Praktikum · Prozess- und Qualitätsentwicklung</p>
+        <p class="focus">Industrialisierung, Qualitätsabsicherung und Anlagenqualifizierung in der Medizintechnik.</p>
+        <ul class="bul">
+          <li>Projektleitung bei der Einführung automatisierter Montagesysteme, von der Planung bis zur Mitarbeiterqualifizierung; Schraubprozesse nach Poka-Yoke standardisiert</li>
+          <li>Analyse von Produktionsstörungen mit Excel und Power BI, Root Cause Analysis in interdisziplinären Teams</li>
+          <li>Prozess-FMEA und Business Cases als Entscheidungsgrundlage</li>
+          <li>Qualifizierung von Produktionsanlagen, u. a. Galvanik, nach EQ/IQ/OQ/PQ</li>
+          <li>Bachelorarbeit: digitale Prüfvorrichtung zur Ausrichtung von Röntgenröhren in Strahlschutzgehäusen</li>
+        </ul>
+        <div class="tags"><span>PFMEA</span><span>IQ/OQ/PQ</span><span>Power BI</span><span>Power Apps</span><span>MES</span><span>Windchill</span></div>
+      </div>
+      <div class="stage" data-model="xray">
+        <canvas aria-label="3D-Modell eines Röntgen-C-Bogens, drehbar"></canvas>
+        <p class="mono cap">Modell 02 · Röntgen-C-Bogen</p>
+        <p class="note"><i></i>Röntgenstrahler hervorgehoben: Thema meiner Bachelorarbeit</p>
+        <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
+      </div>
+    </article>
+
+    <article class="station reveal">
+      <div>
+        <p class="mono">Nov 2024 – Mai 2025 · Hamburg</p>
+        <h3>Abbott</h3>
+        <p class="pos">Werkstudent · Technischer Produktdesigner</p>
+        <p class="focus">Konstruktion und fertigungsnahe Problemlösung für mechatronische Laborautomatisierungssysteme.</p>
+        <ul class="bul">
+          <li>Fertigungs- und montagegerechte Konstruktion (DfM/DfA) für den GLP Systems Track in SolidWorks, Datenpflege in Teamcenter</li>
+          <li>Technische Fehler in Fertigungs- und Montagelinien bearbeitet; Dokumentation auf ISO 9001, RoHS und REACH geprüft</li>
+          <li>3D-gedruckte Prototypen entwickelt und erprobt</li>
+          <li>Kostenanalysen erstellt und Angebotsanfragen bei Lieferanten koordiniert</li>
+        </ul>
+        <div class="tags"><span>DfM/DfA</span><span>SolidWorks</span><span>Teamcenter</span><span>3D-Druck</span><span>ISO 9001</span></div>
+      </div>
+      <div class="stage" data-model="track">
+        <canvas aria-label="3D-Modell eines Probentransport-Tracks, drehbar"></canvas>
+        <p class="mono cap">Modell 03 · Labor-Track</p>
+        <p class="note"><i></i>Probenträger laufen automatisch über den Track</p>
+        <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
+      </div>
+    </article>
+
+    <article class="station reveal">
+      <div>
+        <p class="mono">Apr 2024 – Jul 2025 · Hamburg</p>
+        <h3>HAWKS Racing</h3>
+        <p class="pos">Fertigungsplanung und CNC-Fertigung von Rennwagenradnaben</p>
+        <p class="focus">Fertigungstechnik und Zerspanung im Formula-Student-Team der HAW Hamburg.</p>
+        <ul class="bul">
+          <li>Fertigungsplanung der Radnaben: Bearbeitungsfolge festgelegt, Werkzeuge und Material beschafft</li>
+          <li>CAM-Programmierung mit Siemens NX und SinuTrain, Programme für die Serienfertigung angepasst</li>
+          <li>Eigenständige Fertigung auf CNC-Drehmaschinen und Bearbeitungszentren (SINUMERIK), Prüfung enger Toleranzen und Oberflächengüten</li>
+        </ul>
+        <div class="tags"><span>Siemens NX CAM</span><span>SinuTrain</span><span>SINUMERIK</span><span>CNC</span></div>
+      </div>
+      <div class="stage" data-model="car">
+        <canvas aria-label="3D-Modell eines Formula-Student-Rennwagens, drehbar"></canvas>
+        <p class="mono cap">Modell 04 · Formula Student</p>
+        <p class="note"><i></i>Radnaben hervorgehoben: geplant, programmiert und gefertigt</p>
+        <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PROJEKTE ============ -->
+<section id="projekte">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="mono"><span class="acc">02</span> &nbsp;Projekte</p>
+      <h2>Eigene Projekte.</h2>
+      <p>Ein eigenes Produkt vom Konzept bis zur Serie, dazu vier Arbeiten aus dem Studium.</p>
+    </div>
+
+    <!-- EIGENES PROJEKT: Name, Website-Link und Details bitte ergänzen (siehe Markierungen) -->
+    <article class="feature reveal">
+      <div>
+        <p class="mono"><span class="acc">Eigenes Projekt</span> · Jan 2025 – heute</p>
+        <h3>Produktentwicklung und Fertigungsüberleitung</h3>
+        <p>Freiberufliche Produkt- und Werkzeugentwicklung vom Konzept bis zum 3D-gedruckten Prototyp, anschließend Überführung in die Serienproduktion mit internationalen Lieferanten.</p>
+        <div class="tags"><span>Produktentwicklung</span><span>3D-Druck</span><span>Lieferanten</span><span>Industrialisierung</span></div>
+        <span class="pending">Website-Link folgt</span>
+      </div>
+      <div class="side kv">
+        <div><h4>Was ich gemacht habe</h4>
+          <ul><li>Konzept, Konstruktion und Prototypen im 3D-Druck</li><li>Technische Abstimmung mit internationalen Lieferanten, u. a. aus China</li></ul></div>
+        <div><h4>Was entstanden ist</h4>
+          <p>Unter anderem ein Stempel für Sprühköpfe, der die Produktbereitstellung effizienter macht.</p></div>
+        <div><h4>Herausforderungen</h4>
+          <ul><li>Überführung vom Prototyp in die Serienproduktion</li><li>Zusammenarbeit mit Lieferanten im Ausland</li></ul></div>
+      </div>
+    </article>
+
+    <div class="cards">
+      <article class="card reveal">
+        <p class="mono">Masterprojekt · Okt 2025 – Jun 2026</p>
+        <h3>Lean-Planspiel mit der DB</h3>
+        <p>Prozessanalyse und -optimierung des Planspiels mit Swimlane-Diagrammen, EKUV und GPA. Agile Weiterentwicklung im interdisziplinären Team und Einarbeitung des Personals.</p>
+      </article>
+      <article class="card reveal">
+        <p class="mono">Bachelorarbeit · Philips</p>
+        <h3>Digitale Prüfvorrichtung für Röntgenröhren</h3>
+        <p>Entwurf einer digitalen Prüfvorrichtung zur Ausrichtung von Röntgenröhren in Strahlschutzgehäusen.</p>
+      </article>
+      <article class="card reveal">
+        <p class="mono">Studienprojekt · Okt 2024 – Jan 2025</p>
+        <h3>Fertigungsplanung eines Hydraulikzylinders</h3>
+        <p>Fertigungsfolge und Maschinenauswahl nach Zeichnung, Prozessparametern und Kundentakt. Fertigungslayout nach Lean-Prinzipien inklusive Wirtschaftlichkeitsbewertung.</p>
+      </article>
+      <article class="card reveal">
+        <p class="mono">Bachelorprojekt · Apr – Aug 2024</p>
+        <h3>Autonomer mobiler Roboter</h3>
+        <p>Integration von Aktorik, LiDAR und Kameras mit Arduino/C++, Raspberry Pi/Python und ROS2 für Navigation und Bildverarbeitung. Scrum-Team mit Jira und GitHub.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUSBILDUNG ============ -->
+<section id="ausbildung">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="mono"><span class="acc">03</span> &nbsp;Ausbildung</p>
+      <h2>HAW Hamburg.</h2>
+    </div>
+    <div class="edu">
+      <article class="card reveal">
+        <p class="mono">Okt 2025 – Jan 2027 (voraussichtlich)</p>
+        <h3>M.Sc. Produktionstechnik und -management</h3>
+        <p>Operations- und Projektmanagement, Produktionssysteme, Supply Chain Management, Fabrikplanung sowie nachhaltiges Prozess- und Produktionsmanagement.</p>
+      </article>
+      <article class="card reveal">
+        <p class="mono">Aug 2020 – Jul 2025</p>
+        <h3>B.Sc. Maschinenbau &amp; Produktion</h3>
+        <p>Produktionstechnik, Lean Management, Fertigungsverfahren und Wirtschaftlichkeit; Konstruktion, Simulation, Mechatronik und industrielle Digitalisierung.</p>
+        <p class="thesis"><span class="acc">Bachelorarbeit bei Philips:</span> Entwurf einer digitalen Prüfvorrichtung zur Ausrichtung von Röntgenröhren in Strahlschutzgehäusen.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="mono"><span class="acc">04</span> &nbsp;Fachkompetenzen und Tools</p>
+      <h2>Methoden und Werkzeuge.</h2>
+    </div>
+    <div class="skills">
+      <article class="card reveal"><h3>Process &amp; Manufacturing Engineering</h3>
+        <div class="tags"><span>Prozessanalyse</span><span>Prozessstandardisierung</span><span>Fertigungsplanung</span><span>Anlagenoptimierung</span><span>Industrialisierung</span></div></article>
+      <article class="card reveal"><h3>Operational Excellence &amp; Lean</h3>
+        <div class="tags"><span>TPM</span><span>Autonome Instandhaltung</span><span>KVP</span><span>Kaizen</span><span>Just-in-Time</span><span>Poka-Yoke</span><span>Stillstandsanalysen</span></div></article>
+      <article class="card reveal"><h3>Qualität &amp; Validierung</h3>
+        <div class="tags"><span>PFMEA</span><span>Root Cause Analysis</span><span>IQ/OQ/PQ</span><span>SOPs</span><span>ISO 9001</span><span>RoHS/REACH</span></div></article>
+      <article class="card reveal"><h3>Projekt &amp; Schnittstellen</h3>
+        <div class="tags"><span>Technisches Projektmanagement</span><span>Implementierung</span><span>Stakeholder-Koordination</span><span>Scrum</span></div></article>
+      <article class="card reveal"><h3>Daten &amp; Systeme</h3>
+        <div class="tags"><span>Excel</span><span>Power BI</span><span>Power Apps</span><span>SAP ERP</span><span>MES</span><span>Windchill</span><span>Teamcenter</span><span>Jira</span><span>Python</span><span>SQL</span></div></article>
+      <article class="card reveal"><h3>Konstruktion &amp; Fertigung</h3>
+        <div class="tags"><span>DfM/DfA</span><span>SolidWorks</span><span>Siemens NX</span><span>SinuTrain</span><span>SINUMERIK</span><span>TIA Portal</span><span>3D-Druck</span><span>Git</span></div></article>
+    </div>
+    <div class="extra">
+      <article class="card reveal"><p class="mono">Sprachen</p>
+        <ul class="lang" style="margin-top:10px">
+          <li>Deutsch <span>Muttersprache</span></li><li>Persisch <span>Muttersprache</span></li>
+          <li>Englisch <span>sehr gute Kenntnisse</span></li><li>Arabisch <span>gute Grundkenntnisse</span></li>
+        </ul></article>
+      <article class="card reveal"><p class="mono">Engagement</p>
+        <ul class="lang" style="margin-top:10px">
+          <li>WE Buddy, HAW Hamburg: Begleitung eines internationalen Austauschstudenten <span>seit&nbsp;02/2026</span></li>
+          <li>Rahmat e.V.: Arabischunterricht und Betreuung von Kindern und Jugendlichen <span>seit&nbsp;01/2022</span></li>
+          <li>Visuelle Kommunikation: Bild, Video und Grafik, u. a. für Philips <span>seit&nbsp;08/2024</span></li>
+        </ul></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOKUMENTE ============ -->
+<section id="dokumente">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="mono"><span class="acc">05</span> &nbsp;Dokumente</p>
+      <h2>Zum Nachlesen.</h2>
+      <p>Alle Unterlagen als PDF, direkt auf der Seite ansehen oder herunterladen.</p>
+    </div>
+    <div class="docs">
+      <a class="doc reveal" href="docs/Jones_Rahimi_Lebenslauf.pdf" target="_blank" rel="noopener" data-pdf="Lebenslauf (Deutsch)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+        <b>Lebenslauf</b><span>Deutsch · 2 Seiten</span><em>Ansehen →</em></a>
+      <a class="doc reveal" href="docs/Jones_Rahimi_CV_English.pdf" target="_blank" rel="noopener" data-pdf="CV (English)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+        <b>CV</b><span>English</span><em>Ansehen →</em></a>
+      <a class="doc reveal" href="docs/Zeugnisse_Zertifikate.pdf" target="_blank" rel="noopener" data-pdf="Zeugnisse und Zertifikate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 13.8 7 22l5-3 5 3-1.5-8.2"/></svg>
+        <b>Zeugnisse und Zertifikate</b><span>Arbeits- und Studienzeugnisse, Zertifikate</span><em>Ansehen →</em></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KONTAKT ============ -->
+<section class="contact" id="kontakt">
+  <div class="wrap reveal">
+    <p class="mono"><span class="acc">06</span> &nbsp;Kontakt</p>
+    <h2 style="margin-top:14px">Lassen Sie uns<br>sprechen<span class="acc">.</span></h2>
+    <p>Verfügbar ab 1. Februar 2027 für Positionen in Prozessoptimierung, Produktionstechnik und Operational Excellence. Standort Hamburg.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="mailto:jonesrahimi1@hotmail.com">E-Mail schreiben</a>
+      <a class="btn" href="https://www.linkedin.com/in/jones-rahimi-20174528b" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Jones Rahimi · Hamburg</span><span>3D-Modelle: eigene Darstellung, three.js</span></div></footer>
+
+<dialog id="pdf" aria-label="PDF-Ansicht">
+  <div class="pdf-bar"><span class="pdf-title"></span><a class="pdf-ext" href="#" target="_blank" rel="noopener">In neuem Tab</a><button class="pdf-close" type="button">Schließen</button></div>
+  <iframe title="PDF-Dokument" src="about:blank"></iframe>
+</dialog>
+
+<script src="js/three.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
