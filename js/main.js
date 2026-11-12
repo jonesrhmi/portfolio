@@ -5,13 +5,13 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- Bausteine ---------- */
-  var C = { body: 0xe6eaf0, dark: 0x1a2130, mid: 0x8a94a6, accent: 0xf5b042,
+  var C = { body: 0xe6eaf0, dark: 0x1d1d1f, mid: 0x8e8e93, accent: 0xf2a31b,
     lh: 0x0a2472, hawks: 0x0c1a4a, dbRed: 0xec0016, philips: '#0b5ed7' };
   function M(color, o) {
     return new T.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.55, metalness: 0.15 }, o || {}));
   }
   function accentMat() {
-    return M(C.accent, { emissive: C.accent, emissiveIntensity: 0.28, metalness: 0.35, roughness: 0.35 });
+    return M(C.accent, { emissive: C.accent, emissiveIntensity: 0.1, metalness: 0.3, roughness: 0.4 });
   }
   function at(m, x, y, z) { m.position.set(x || 0, y || 0, z || 0); return m; }
   function box(w, h, d, mat, x, y, z) { return at(new T.Mesh(new T.BoxGeometry(w, h, d), mat), x, y, z); }
@@ -114,68 +114,83 @@
     });
     g.userData.tick = function (t, dt) {
       fans.forEach(function (f) { f.rotation.x += dt * 9; });
-      g.position.y = Math.sin(t * 0.9) * 0.08; g.rotation.z = Math.sin(t * 0.6) * 0.03;
+      g.rotation.z = Math.sin(t * 0.6) * 0.03;
     };
     return g;
   }
 
-  /* ---------- Röntgen-C-Bogen (Philips) ---------- */
-  function buildXray() {
-    var g = new T.Group();
-    var body = M(C.body, { roughness: 0.45 }), dark = M(C.dark), acc = accentMat();
-    g.add(box(1.3, 0.22, 1.1, dark, -1.75, 0.2, 0));
-    [[-2.3, 0.45], [-2.3, -0.45], [-1.2, 0.45], [-1.2, -0.45]].forEach(function (p) {
-      var w = cyl(0.09, 0.09, 0.08, M(C.mid), p[0], 0.09, p[1]); w.rotation.x = Math.PI / 2; g.add(w);
+  /* ---------- Röntgenstrahler: Röhre im Strahlenschutzgehäuse (Philips) ---------- */
+  function buildTube() {
+    var g = new T.Group(), PI = Math.PI;
+    var white = M(0xf1f2f4, { roughness: 0.4 }), dark = M(C.dark, { roughness: 0.45 }), acc = accentMat();
+    var metal = M(0x9a9da3, { metalness: 0.8, roughness: 0.3 }), copper = M(0xb87333, { metalness: 0.7, roughness: 0.35 });
+    var shell = new T.MeshStandardMaterial({ color: 0xd5dde6, transparent: true, opacity: 0.2, roughness: 0.15,
+      metalness: 0.1, depthWrite: false, side: T.DoubleSide });
+    var glass = new T.MeshStandardMaterial({ color: 0xb5cfe2, transparent: true, opacity: 0.3, roughness: 0.05, depthWrite: false });
+    function xc(rt, rb, h, mat, x) { var m = cyl(rt, rb, h, mat, x, 0, 0, 48); m.rotation.z = -PI / 2; return m; } // Achse entlang X
+
+    var housing = xc(0.62, 0.62, 1.9, shell, 0); housing.renderOrder = 2; g.add(housing);
+    g.add(xc(0.5, 0.62, 0.4, white, 1.15)); g.add(xc(0.62, 0.5, 0.4, white, -1.15));   // Endkappen
+    g.add(xc(0.42, 0.42, 0.06, metal, 1.38)); g.add(xc(0.42, 0.42, 0.06, metal, -1.38));
+    g.add(xc(0.645, 0.645, 0.1, white, 0.78)); g.add(xc(0.645, 0.645, 0.1, white, -0.78));
+    [1, -1].forEach(function (sg) {                                                       // Hochspannungsanschlüsse
+      var hv = at(new T.Group(), sg * 0.78, 0.52, 0); hv.rotation.z = -sg * 0.4;
+      hv.add(cyl(0.17, 0.2, 0.5, white, 0, 0.25, 0)); hv.add(cyl(0.09, 0.09, 0.36, dark, 0, 0.62, 0, 20)); g.add(hv);
+      g.add(box(0.8, 0.2, 0.02, white, 0, 0.06, sg * 0.625));                              // Typenschild
+      g.add(onSide(label('PHILIPS', 0.62, 0.13, C.philips), 0, 0.06, 0.637, sg));
     });
-    g.add(box(0.34, 1.9, 0.34, body, -1.9, 1.25, 0));
-    g.add(box(0.75, 0.24, 0.28, body, -1.5, 1.6, 0));
-    [1, -1].forEach(function (sg) { g.add(onSide(label('PHILIPS', 0.3, 0.075, C.philips), -1.9, 1.98, 0.172, sg)); });
+    g.add(cyl(0.3, 0.3, 0.2, white, 0, -0.68, 0));                                        // Strahlenaustritt
+    g.add(box(0.8, 0.08, 0.8, dark, 0, -0.82, 0));
 
-    var R = 1.1, arm = at(new T.Group(), 0, 1.6, 0);
-    var arc = new T.Mesh(new T.TorusGeometry(R, 0.085, 14, 64, Math.PI * 1.2), body);
-    arc.rotation.z = Math.PI * 0.4; arm.add(arc);
-    arm.add(cyl(0.32, 0.32, 0.12, body, 0.34, 1.0, 0));       // Detektor
-    arm.add(cyl(0.27, 0.27, 0.02, dark, 0.34, 0.93, 0));
-    var tube = cyl(0.2, 0.2, 0.46, acc, 0.34, -1.0, 0); tube.rotation.x = Math.PI / 2; arm.add(tube); // Röntgenstrahler
-    arm.add(box(0.22, 0.16, 0.22, dark, 0.34, -0.8, 0));      // Blende
-    var beam = new T.Mesh(new T.ConeGeometry(0.27, 1.64, 40, 1, true),
-      new T.MeshBasicMaterial({ color: C.accent, transparent: true, opacity: 0.16, side: T.DoubleSide, depthWrite: false }));
-    beam.rotation.x = Math.PI; beam.position.set(0.34, 0.1, 0); arm.add(beam);
-    g.add(arm);
-
-    g.add(box(0.75, 0.07, 2.9, body, 0.34, 1.62, 0.3));       // Patientenliege
-    g.add(box(0.6, 0.03, 2.0, dark, 0.34, 1.67, 0.1));
-    g.add(box(0.4, 1.5, 0.5, dark, 0.34, 0.83, 1.45));
-    g.add(box(0.85, 0.1, 0.95, dark, 0.34, 0.05, 1.45));
-
-    g.userData.tick = function (t) {
-      arm.rotation.x = Math.sin(t * 0.55) * 0.32;
-      beam.material.opacity = 0.13 + 0.06 * Math.sin(t * 3);
-    };
+    var tube = xc(0.25, 0.25, 1.5, glass, 0); tube.renderOrder = 1; g.add(tube);          // Röhre
+    var bulb = new T.Mesh(new T.SphereGeometry(0.4, 32, 24), glass); bulb.scale.x = 1.15; bulb.renderOrder = 1; g.add(bulb);
+    var anode = new T.Group();
+    var disc = cyl(0.2, 0.33, 0.09, metal, 0.08, 0, 0, 48); disc.rotation.z = PI / 2; anode.add(disc);
+    var rim = new T.Mesh(new T.TorusGeometry(0.3, 0.022, 10, 48), acc); rim.rotation.y = PI / 2; rim.position.x = 0.045; anode.add(rim);
+    for (var i = 0; i < 6; i++) { var m = box(0.012, 0.2, 0.02, dark, 0.13, 0, 0); var h = new T.Group(); h.rotation.x = i * PI / 3; m.position.y = 0.18; h.add(m); anode.add(h); }
+    anode.add(xc(0.11, 0.11, 0.6, copper, 0.45));
+    g.add(anode);
+    g.add(xc(0.1, 0.1, 0.4, metal, -0.52)); g.add(box(0.14, 0.2, 0.2, metal, -0.28, -0.17, 0)); // Kathode
+    g.add(at(new T.Mesh(new T.SphereGeometry(0.035, 12, 10), new T.MeshBasicMaterial({ color: 0xffc04d })), 0.02, -0.27, 0));
+    var beam = new T.Mesh(new T.ConeGeometry(0.5, 1.4, 40, 1, true),
+      new T.MeshBasicMaterial({ color: C.accent, transparent: true, opacity: 0.18, side: T.DoubleSide, depthWrite: false }));
+    beam.position.set(0.02, -0.97, 0); g.add(beam);
+    g.userData.tick = function (t, dt) { anode.rotation.x += dt * 5; beam.material.opacity = 0.16 + 0.06 * Math.sin(t * 3); };
     return g;
   }
 
-  /* ---------- Probentransport-Track (Abbott) ---------- */
-  function buildTrack() {
-    var g = new T.Group();
-    var body = M(C.body), dark = M(C.dark, { roughness: 0.4 }), acc = accentMat();
-    var L = 2.6, R = 0.85, W = 0.2, PI = Math.PI;
+  /* ---------- Laborautomation: Analysemodule mit GLP Systems Track (Abbott) ---------- */
+  function buildLab() {
+    var g = new T.Group(), PI = Math.PI;
+    var white = M(0xf3f4f6, { roughness: 0.45 }), dark = M(C.dark, { roughness: 0.4 }), acc = accentMat(), mid = M(C.mid);
+    var alu = M(0xc4c8ce, { metalness: 0.65, roughness: 0.35 });
+    var hood = new T.MeshStandardMaterial({ color: 0x232a36, transparent: true, opacity: 0.8, roughness: 0.08, metalness: 0.2 });
+    var blue = new T.MeshBasicMaterial({ color: 0x009cde });
+    [-0.78, 0.78].forEach(function (x) {
+      g.add(box(1.52, 0.95, 0.9, white, x, 0.475, 0));          // Unterschrank
+      g.add(box(1.52, 0.03, 0.02, blue, x, 0.975, 0.455));      // Statusleiste
+      g.add(box(1.2, 0.015, 0.02, mid, x, 0.18, 0.455));
+      g.add(cyl(0.3, 0.3, 0.1, white, x - 0.25, 1.03, -0.05));  // Karussell unter der Haube
+      g.add(box(0.5, 0.04, 0.06, mid, x + 0.25, 1.35, -0.05)); g.add(cyl(0.02, 0.02, 0.3, mid, x + 0.45, 1.2, -0.05, 10));
+      var h = box(1.46, 0.62, 0.8, hood, x, 1.29, -0.03); h.renderOrder = 1; g.add(h);
+      g.add(box(1.52, 0.07, 0.9, white, x, 1.635, 0));
+    });
+    g.add(at(label('Abbott', 0.46, 0.12, '#009cde'), -1.2, 0.72, 0.452));
+    var scr = at(new T.Group(), 1.82, 1.3, 0.5); scr.rotation.y = -0.45;
+    scr.add(box(0.5, 0.34, 0.03, dark)); scr.add(box(0.44, 0.28, 0.004, new T.MeshBasicMaterial({ color: 0x2f7fc1 }), 0, 0, 0.018));
+    g.add(scr); g.add(rod(new T.Vector3(1.54, 1.05, 0.3), new T.Vector3(1.8, 1.2, 0.48), 0.02, mid));
+
+    var L = 2.5, R = 0.3, W = 0.11, Y = 0.82, Z = 0.95;
     function stadium(s, r) {
       s.moveTo(-L / 2, -r); s.lineTo(L / 2, -r); s.absarc(L / 2, 0, r, -PI / 2, PI / 2, false);
       s.lineTo(-L / 2, r); s.absarc(-L / 2, 0, r, PI / 2, PI * 1.5, false);
     }
     var sh = new T.Shape(); stadium(sh, R + W);
     var hole = new T.Path(); stadium(hole, R - W); sh.holes.push(hole);
-    var geo = new T.ExtrudeGeometry(sh, { depth: 0.1, bevelEnabled: false, curveSegments: 32 });
+    var geo = new T.ExtrudeGeometry(sh, { depth: 0.07, bevelEnabled: false, curveSegments: 32 });
     geo.rotateX(-PI / 2);
-    g.add(new T.Mesh(geo, dark));
-    g.add(box(L + 2 * R + 1.0, 0.14, 2 * R + 1.9, body, 0, -0.07, -0.45));
-    [[-2.3, 0.9], [2.3, 0.9], [-2.3, -1.8], [2.3, -1.8]].forEach(function (p) {
-      g.add(box(0.12, 0.9, 0.12, M(C.mid), p[0], -0.59, p[1]));
-    });
-    g.add(box(1.7, 1.0, 0.7, body, 0, 0.5, -R - 0.85));      // Analysemodul
-    g.add(box(1.25, 0.42, 0.02, dark, 0, 0.62, -R - 0.49));
-    g.add(box(1.25, 0.04, 0.03, acc, 0, 0.3, -R - 0.49));
+    g.add(at(new T.Mesh(geo, alu), 0, Y - 0.07, Z));
+    [-1.1, 0, 1.1].forEach(function (x) { g.add(box(0.1, 0.05, 0.3, alu, x, Y - 0.1, 0.58)); }); // Halter am Modul
 
     var P = 2 * L + 2 * PI * R;
     function pos(d) {
@@ -185,18 +200,18 @@
       if (d < 2 * L + PI * R) return [L / 2 - (d - L - PI * R), R];
       var b = (d - 2 * L - PI * R) / R; return [-L / 2 - R * Math.sin(b), R * Math.cos(b)];
     }
-    var glass = M(0xdfe9f5, { transparent: true, opacity: 0.45, roughness: 0.1 });
+    var glass = M(0xdfe9f5, { transparent: true, opacity: 0.5, roughness: 0.1 });
     var carriers = [];
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < 7; i++) {
       var c = new T.Group();
-      c.add(cyl(0.12, 0.12, 0.07, body, 0, 0.135, 0));
-      c.add(cyl(0.035, 0.035, 0.2, M(0xc9584f), 0, 0.29, 0, 12));
-      c.add(cyl(0.048, 0.048, 0.42, glass, 0, 0.38, 0, 16));
-      c.add(cyl(0.058, 0.058, 0.07, i % 3 ? M(C.mid) : acc, 0, 0.62, 0, 16));
-      c.userData.d = (i / 8) * P; g.add(c); carriers.push(c);
+      c.add(cyl(0.085, 0.085, 0.07, white, 0, 0.035, 0));
+      c.add(cyl(0.024, 0.024, 0.14, M(0xc9584f), 0, 0.14, 0, 12));
+      c.add(cyl(0.032, 0.032, 0.3, glass, 0, 0.22, 0, 16));
+      c.add(cyl(0.04, 0.04, 0.05, i % 3 ? mid : acc, 0, 0.39, 0, 16));
+      c.userData.d = (i / 7) * P; g.add(c); carriers.push(c);
     }
     g.userData.tick = function (t) {
-      carriers.forEach(function (c) { var p = pos(c.userData.d + t * 0.55); c.position.set(p[0], 0, p[1]); });
+      carriers.forEach(function (c) { var p = pos(c.userData.d + t * 0.45); c.position.set(p[0], Y, Z + p[1]); });
     };
     g.userData.tick(0);
     return g;
@@ -330,7 +345,15 @@
   }
 
   /* ---------- Bühne je Modell ---------- */
-  var stages = [];
+  var stages = [], shTex;
+  function shadowTex() {
+    if (shTex) return shTex;
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(0,0,0,.42)'); gr.addColorStop(0.55, 'rgba(0,0,0,.14)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+    return (shTex = new T.CanvasTexture(c));
+  }
   function mount(el, build, opt) {
     var canvas = el.querySelector('canvas');
     var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -339,23 +362,26 @@
     var scene = new T.Scene();
     var cam = new T.PerspectiveCamera(32, 1, 0.1, 100);
     cam.position.set(0, 2.2, 10.8); cam.lookAt(0, 0, 0);
-    scene.add(new T.HemisphereLight(0xffffff, 0x1b2334, 0.95));
-    var key = new T.DirectionalLight(0xffffff, 1.05); key.position.set(4, 7, 6); scene.add(key);
-    var rim = new T.DirectionalLight(0xf5b042, 0.55); rim.position.set(-6, 2, -5); scene.add(rim);
+    scene.add(new T.HemisphereLight(0xffffff, 0xb4b9c2, 0.78));
+    var key = new T.DirectionalLight(0xffffff, 0.7); key.position.set(4, 7, 6); scene.add(key);
+    var rim = new T.DirectionalLight(0xffffff, 0.3); rim.position.set(-6, 2, -5); scene.add(rim);
 
     var pivot = new T.Group(); scene.add(pivot);
     var model = build();
     var bb = new T.Box3().setFromObject(model), size = bb.getSize(new T.Vector3()), ctr = bb.getCenter(new T.Vector3());
     var sc = (opt.fit || 5.2) / Math.max(size.x, size.z, size.y * 1.4);
-    var ground = opt.float ? -1.6 : Math.max(-1.6, -size.y * sc / 2 - 0.35); // flache Modelle höher setzen
-    var grid = new T.PolarGridHelper(3.5, 12, 5, 72, 0x3d4a66, 0x283246);
-    grid.position.y = ground; grid.material.transparent = true; grid.material.opacity = 0.75; pivot.add(grid);
     var holder = new T.Group(); holder.scale.setScalar(sc);
-    holder.position.set(-ctr.x * sc, opt.float ? -ctr.y * sc + 0.1 : ground - bb.min.y * sc, -ctr.z * sc);
+    var baseY = -ctr.y * sc + 0.2;
+    holder.position.set(-ctr.x * sc, baseY, -ctr.z * sc);
     holder.add(model); pivot.add(holder);
+    var shadow = new T.Mesh(new T.PlaneGeometry(1, 1),
+      new T.MeshBasicMaterial({ map: shadowTex(), transparent: true, opacity: 0.55, depthWrite: false }));
+    shadow.rotation.x = -Math.PI / 2; shadow.renderOrder = -1;
+    shadow.scale.set(size.x * sc * 1.3, size.z * sc * 1.3, 1);
+    shadow.position.y = Math.max(-2.3, -size.y * sc / 2 - 0.45); pivot.add(shadow); // weicher Schatten statt Bodenraster
 
     var st = { el: el, renderer: renderer, scene: scene, cam: cam, model: model, pivot: pivot,
-      yaw: opt.yaw || 0.6, pitch: 0.14, drag: false, last: -1e9, visible: false, w: 0, h: 0 };
+      holder: holder, baseY: baseY, phase: stages.length * 1.7, yaw: opt.yaw || 0.6, pitch: 0.14, drag: false, last: -1e9, visible: false, w: 0, h: 0 };
     function size_() {
       var w = el.clientWidth, h = el.clientHeight;
       if (!w || !h || (w === st.w && h === st.h)) return;
@@ -382,9 +408,9 @@
 
   function initStages() {
     if (!T) return;
-    var builders = { plane: [buildPlane, { float: true, yaw: -0.7 }], xray: [buildXray, { yaw: 0.75 }],
-      train: [buildTrain, { yaw: -0.6, fit: 6.2 }],
-      track: [buildTrack, { yaw: 0.5, fit: 5.6 }], car: [buildCar, { yaw: -0.65, fit: 5.3 }] };
+    var builders = { plane: [buildPlane, { yaw: -0.7 }], tube: [buildTube, { yaw: 0.3, fit: 6.4 }],
+      train: [buildTrain, { yaw: -0.6, fit: 5.6 }], lab: [buildLab, { yaw: -0.55, fit: 4.3 }],
+      car: [buildCar, { yaw: -0.65, fit: 5.3 }] };
     document.querySelectorAll('[data-model]').forEach(function (el) {
       var b = builders[el.dataset.model]; if (!b) return;
       try { mount(el, b[0], b[1]); } catch (err) { el.classList.add('no-webgl'); }
@@ -404,6 +430,7 @@
         s.resize();
         if (!s.drag && !reduceMotion && now - s.last > 1800) s.yaw += dt * 0.28;
         s.pivot.rotation.set(s.pitch, s.yaw, 0);
+        if (!reduceMotion) s.holder.position.y = s.baseY + Math.sin(now / 1000 * 0.9 + s.phase) * 0.07;
         if (s.model.userData.tick && !reduceMotion) s.model.userData.tick(now / 1000, dt);
         s.renderer.render(s.scene, s.cam);
       });
@@ -433,13 +460,18 @@
     }, { rootMargin: '-45% 0px -50% 0px' });
     document.querySelectorAll('main section[id]').forEach(function (s) { so.observe(s); });
 
-    var bar = document.querySelector('.progress');
-    function onScroll() {
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.transform = 'scaleX(' + (h > 0 ? window.scrollY / h : 0) + ')';
-      document.body.classList.toggle('scrolled', window.scrollY > 40);
-    }
+    function onScroll() { document.body.classList.toggle('scrolled', window.scrollY > 40); }
     window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    var root = document.documentElement, langBtns = document.querySelectorAll('.lang-sw button');
+    var titles = { de: 'Jones Rahimi – Maschinenbauingenieur', en: 'Jones Rahimi – Mechanical Engineer' };
+    function setLang(l, save) {
+      root.lang = l; document.title = titles[l];
+      langBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === l)); });
+      if (save) { try { localStorage.setItem('lang', l); } catch (e) {} }
+    }
+    setLang(root.lang === 'en' ? 'en' : 'de');
+    langBtns.forEach(function (b) { b.addEventListener('click', function () { setLang(b.dataset.lang, true); }); });
 
     var dlg = document.getElementById('pdf'), frame = dlg.querySelector('iframe');
     var title = dlg.querySelector('.pdf-title'), ext = dlg.querySelector('.pdf-ext');
