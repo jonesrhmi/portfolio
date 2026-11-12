@@ -110,7 +110,7 @@ section{padding:clamp(72px,10vw,128px) 0}
 .kv li{padding:3px 0 3px 18px;position:relative}
 .kv li::before{content:"";position:absolute;left:0;top:14px;width:8px;height:1px;background:var(--acc)}
 .pending{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:1px dashed var(--line2);border-radius:999px;color:var(--muted);font-size:14px;margin-top:24px}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
 .card{padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel);transition:border-color .25s,transform .25s}
 .card:hover{border-color:var(--line2);transform:translateY(-3px)}
 .card h3{font-size:21px;font-weight:600;margin:10px 0 10px;letter-spacing:-.01em}
@@ -124,6 +124,7 @@ section{padding:clamp(72px,10vw,128px) 0}
 /* Skills */
 .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .skills .card .tags{margin-top:14px}
+.skills .ai{grid-column:1/-1;border-color:rgba(245,176,66,.35)}
 .skills .tags span{color:#cdd4df}
 .extra{display:grid;grid-template-columns:1fr 1.4fr;gap:18px;margin-top:18px}
 .lang li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
@@ -170,6 +171,7 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
   .feature{grid-template-columns:1fr}
   .feature .side{border-left:0;border-top:1px solid var(--line)}
   .skills,.docs{grid-template-columns:1fr 1fr}
+  .cards{grid-template-columns:1fr}
   .extra{grid-template-columns:1fr}
 }
 @media (max-width:640px){
@@ -238,8 +240,8 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="mono"><span class="acc">01</span> &nbsp;Berufserfahrung</p>
-      <h2>Vier Stationen, vier Branchen.</h2>
-      <p>Luftfahrt, Medizintechnik, Laborautomatisierung, Motorsport. Jede Station hat ein 3D-Modell: mit der Maus oder dem Finger ziehen, um es zu drehen.</p>
+      <h2>Fünf Stationen, fünf Branchen.</h2>
+      <p>Luftfahrt, Bahninfrastruktur, Medizintechnik, Laborautomatisierung, Motorsport. Jede Station hat ein 3D-Modell: mit der Maus oder dem Finger ziehen, um es zu drehen.</p>
     </div>
 
     <article class="station reveal">
@@ -257,9 +259,31 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
         <div class="tags"><span>TPM</span><span>5-Why</span><span>Ishikawa</span><span>Standardarbeit</span><span>Shopfloor</span></div>
       </div>
       <div class="stage" data-model="plane">
-        <canvas aria-label="3D-Modell eines Verkehrsflugzeugs, drehbar"></canvas>
-        <p class="mono cap">Modell 01 · Twin-Jet</p>
-        <p class="note"><i></i>Triebwerke hervorgehoben: mein Arbeitsbereich</p>
+        <canvas aria-label="3D-Modell eines Airbus A320 in Lufthansa-Farben, drehbar"></canvas>
+        <p class="mono cap">Modell 01 · Airbus A320</p>
+        <p class="note"><i></i>Triebwerke markiert: mein Arbeitsbereich</p>
+        <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
+      </div>
+    </article>
+
+    <article class="station reveal">
+      <div>
+        <p class="mono">Okt 2025 – Jun 2026 · Hamburg</p>
+        <h3>DB InfraGO</h3>
+        <p class="pos">Masterprojekt · Lean Construction Qualifizierung</p>
+        <p class="focus">Weiterentwicklung der Praxissimulation für die Lean-Construction-Experten-Qualifizierung nach VDI 2553.</p>
+        <ul class="bul">
+          <li>IST-Zustand der bestehenden Praxissimulation aufgenommen; Prozessanalyse mit Swimlane-Diagrammen, EKUV und GPA</li>
+          <li>Simulation neu entwickelt und angepasst, agil im interdisziplinären Team mit Sprints und Retrospektiven</li>
+          <li>Neue Inhalte für das Schulungsteam der DB InfraGO AG aufbereitet</li>
+          <li>Zwei Pilotierungen mit Mitarbeitenden der DB InfraGO AG und Studierenden der HAW eigenständig durchgeführt und moderiert</li>
+        </ul>
+        <div class="tags"><span>Lean Construction</span><span>VDI 2553</span><span>Swimlane</span><span>Moderation</span><span>Scrum</span></div>
+      </div>
+      <div class="stage" data-model="train">
+        <canvas aria-label="3D-Modell eines Zuges auf einem Gleis mit Oberleitung, drehbar"></canvas>
+        <p class="mono cap">Modell 02 · Zug und Fahrweg</p>
+        <p class="note"><i></i>Gleis markiert: die Infrastruktur der DB InfraGO</p>
         <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
       </div>
     </article>
@@ -281,7 +305,7 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
       </div>
       <div class="stage" data-model="xray">
         <canvas aria-label="3D-Modell eines Röntgen-C-Bogens, drehbar"></canvas>
-        <p class="mono cap">Modell 02 · Röntgen-C-Bogen</p>
+        <p class="mono cap">Modell 03 · Röntgen-C-Bogen</p>
         <p class="note"><i></i>Röntgenstrahler hervorgehoben: Thema meiner Bachelorarbeit</p>
         <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
       </div>
@@ -303,7 +327,7 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
       </div>
       <div class="stage" data-model="track">
         <canvas aria-label="3D-Modell eines Probentransport-Tracks, drehbar"></canvas>
-        <p class="mono cap">Modell 03 · Labor-Track</p>
+        <p class="mono cap">Modell 04 · Labor-Track</p>
         <p class="note"><i></i>Probenträger laufen automatisch über den Track</p>
         <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
       </div>
@@ -324,7 +348,7 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
       </div>
       <div class="stage" data-model="car">
         <canvas aria-label="3D-Modell eines Formula-Student-Rennwagens, drehbar"></canvas>
-        <p class="mono cap">Modell 04 · Formula Student</p>
+        <p class="mono cap">Modell 05 · Formula Student</p>
         <p class="note"><i></i>Radnaben hervorgehoben: geplant, programmiert und gefertigt</p>
         <p class="mono hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>Ziehen</p>
       </div>
@@ -338,7 +362,7 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
     <div class="sec-head reveal">
       <p class="mono"><span class="acc">02</span> &nbsp;Projekte</p>
       <h2>Eigene Projekte.</h2>
-      <p>Ein eigenes Produkt vom Konzept bis zur Serie, dazu vier Arbeiten aus dem Studium.</p>
+      <p>Ein eigenes Produkt vom Konzept bis zur Serie, dazu drei Arbeiten aus dem Studium.</p>
     </div>
 
     <!-- EIGENES PROJEKT: Name, Website-Link und Details bitte ergänzen (siehe Markierungen) -->
@@ -361,11 +385,6 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
     </article>
 
     <div class="cards">
-      <article class="card reveal">
-        <p class="mono">Masterprojekt · Okt 2025 – Jun 2026</p>
-        <h3>Lean-Planspiel mit der DB</h3>
-        <p>Prozessanalyse und -optimierung des Planspiels mit Swimlane-Diagrammen, EKUV und GPA. Agile Weiterentwicklung im interdisziplinären Team und Einarbeitung des Personals.</p>
-      </article>
       <article class="card reveal">
         <p class="mono">Bachelorarbeit · Philips</p>
         <h3>Digitale Prüfvorrichtung für Röntgenröhren</h3>
@@ -428,6 +447,9 @@ dialog#pdf iframe{width:100%;height:calc(100% - 54px);border:0;background:#fff}
         <div class="tags"><span>Excel</span><span>Power BI</span><span>Power Apps</span><span>SAP ERP</span><span>MES</span><span>Windchill</span><span>Teamcenter</span><span>Jira</span><span>Python</span><span>SQL</span></div></article>
       <article class="card reveal"><h3>Konstruktion &amp; Fertigung</h3>
         <div class="tags"><span>DfM/DfA</span><span>SolidWorks</span><span>Siemens NX</span><span>SinuTrain</span><span>SINUMERIK</span><span>TIA Portal</span><span>3D-Druck</span><span>Git</span></div></article>
+      <article class="card reveal ai"><h3>KI-Tools</h3>
+        <p>Versierter Umgang mit KI-Assistenten und Coding-Agenten für Recherche, Analyse, Dokumentation und Softwareentwicklung.</p>
+        <div class="tags"><span>Claude</span><span>Claude Code</span><span>OpenAI Codex</span><span>ChatGPT</span><span>Prompt Engineering</span><span>Agentische Workflows</span></div></article>
     </div>
     <div class="extra">
       <article class="card reveal"><p class="mono">Sprachen</p>

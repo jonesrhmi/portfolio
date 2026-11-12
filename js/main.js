@@ -5,7 +5,8 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- Bausteine ---------- */
-  var C = { body: 0xe6eaf0, dark: 0x1a2130, mid: 0x8a94a6, accent: 0xf5b042 };
+  var C = { body: 0xe6eaf0, dark: 0x1a2130, mid: 0x8a94a6, accent: 0xf5b042,
+    lh: 0x0a2472, hawks: 0x0c1a4a, dbRed: 0xec0016, philips: '#0b5ed7' };
   function M(color, o) {
     return new T.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.55, metalness: 0.15 }, o || {}));
   }
@@ -30,18 +31,45 @@
     return new T.ExtrudeGeometry(s, { depth: depth, bevelEnabled: false });
   }
 
-  /* ---------- Flugzeug (Lufthansa Technik) ---------- */
+  /* Schriftzug als Textur auf einer Fläche (o: bg, frame, italic) */
+  function label(text, w, h, fg, o) {
+    o = o || {};
+    var c = document.createElement('canvas'); c.width = 512; c.height = Math.max(32, Math.round(512 * h / w));
+    var x = c.getContext('2d'), ch = c.height;
+    if (o.bg) { x.fillStyle = o.bg; x.fillRect(0, 0, 512, ch); }
+    if (o.frame) { x.strokeStyle = o.frame; x.lineWidth = ch * 0.1; x.strokeRect(ch * 0.1, ch * 0.1, 512 - ch * 0.2, ch * 0.8); }
+    var fs = ch * (o.frame ? 0.62 : 0.78);
+    x.font = (o.italic ? 'italic ' : '') + '700 ' + fs + 'px Helvetica, Arial, sans-serif';
+    var tw = x.measureText(text).width, max = 512 * (o.frame ? 0.7 : 0.94);
+    if (tw > max) { fs *= max / tw; x.font = (o.italic ? 'italic ' : '') + '700 ' + fs + 'px Helvetica, Arial, sans-serif'; }
+    x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, 256, ch * 0.53);
+    var tex = new T.CanvasTexture(c); tex.encoding = T.sRGBEncoding; tex.anisotropy = 4;
+    return new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ map: tex, transparent: !o.bg }));
+  }
+  /* Fläche auf eine Seitenwand setzen: sg = +1 (Seite +Z) oder -1 (Seite -Z) */
+  function onSide(m, x, y, z, sg) { m.position.set(x, y, sg * z); if (sg < 0) m.rotation.y = Math.PI; return m; }
+
+  /* ---------- Flugzeug (Lufthansa Technik): A320 in Lufthansa-Farben ---------- */
   function buildPlane() {
     var g = new T.Group();
-    var body = M(C.body, { roughness: 0.4 }), dark = M(C.dark, { roughness: 0.3 }), acc = accentMat();
-    var wingMat = M(C.body, { roughness: 0.4, side: T.DoubleSide });
+    var body = M(0xf4f6f9, { roughness: 0.4 }), dark = M(C.dark, { roughness: 0.3 }), acc = accentMat();
+    var wingMat = M(0xdfe4ea, { roughness: 0.4, side: T.DoubleSide });
+    var blue = M(C.lh, { roughness: 0.4, side: T.DoubleSide });
 
     var prof = [[0, -3.3], [0.14, -3.2], [0.28, -2.95], [0.38, -2.6], [0.44, -2.1], [0.44, 1.3],
       [0.36, 2.2], [0.22, 2.9], [0.08, 3.3], [0, 3.32]].map(function (p) { return new T.Vector2(p[0], p[1]); });
     var fus = new T.Mesh(new T.LatheGeometry(prof, 40), body);
     fus.rotation.z = Math.PI / 2; // Nase zeigt nach +X
     g.add(fus);
-    g.add(box(3.2, 0.06, 0.9, dark, 0.4, 0.12, 0));   // Fensterband
+    var tailProf = [[0.382, 2.0], [0.364, 2.2], [0.224, 2.9], [0.084, 3.3], [0, 3.325]]
+      .map(function (p) { return new T.Vector2(p[0], p[1]); });
+    var tail = new T.Mesh(new T.LatheGeometry(tailProf, 40), blue); // blaues Heck
+    tail.rotation.z = Math.PI / 2; g.add(tail);
+    g.add(box(3.6, 0.045, 0.9, dark, 0.2, 0.12, 0));  // Fensterband
+    [1, -1].forEach(function (sg) {                    // Schriftzug, an den Rumpf angelegt
+      var h = new T.Group(); h.rotation.x = -sg * 0.62;
+      h.add(onSide(label('Lufthansa Technik', 1.5, 0.15, '#0a2472'), 1.25, 0, 0.447, sg)); g.add(h);
+    });
     g.add(box(0.3, 0.1, 0.6, dark, 2.75, 0.17, 0));   // Cockpit
 
     function surface(pts, depth, y, dihedral) {
@@ -49,17 +77,27 @@
       var r = new T.Mesh(geo, wingMat); r.position.y = y; r.rotation.x = -dihedral;
       var l = new T.Mesh(geo, wingMat); l.position.y = y; l.scale.z = -1; l.rotation.x = dihedral;
       g.add(r, l);
+      return [r, l];
     }
-    surface([[1.0, 0], [-0.5, 0], [-1.45, 3.5], [-1.0, 3.5]], 0.07, -0.12, 0.07);
+    var sharklet = flat([[-1.0, -0.04], [-1.45, -0.04], [-1.78, 0.5], [-1.58, 0.5]], 0.04);
+    sharklet.translate(0, 0, 3.47);
+    surface([[1.0, 0], [-0.5, 0], [-1.45, 3.5], [-1.0, 3.5]], 0.07, -0.12, 0.07)
+      .forEach(function (w) { w.add(new T.Mesh(sharklet, blue)); });
     surface([[-2.3, 0], [-3.0, 0], [-3.3, 1.35], [-2.95, 1.35]], 0.05, 0.12, 0.03);
     var fin = flat([[-2.1, 0.3], [-3.15, 0.3], [-3.5, 1.6], [-3.1, 1.6]], 0.07);
     fin.translate(0, 0, -0.035);
-    g.add(new T.Mesh(fin, body));
+    g.add(new T.Mesh(fin, blue));
+    [0.042, -0.042].forEach(function (z) {             // heller Ring am Leitwerk
+      g.add(at(new T.Mesh(new T.RingGeometry(0.15, 0.2, 40),
+        new T.MeshBasicMaterial({ color: 0xffffff, side: T.DoubleSide })), -3.0, 1.03, z));
+    });
 
     var fans = [];
     [1.3, -1.3].forEach(function (z) {
       var e = at(new T.Group(), 0.45, -0.5, z);
-      var nac = cyl(0.27, 0.21, 0.95, acc); nac.rotation.z = -Math.PI / 2; e.add(nac);
+      var nac = cyl(0.27, 0.21, 0.95, body); nac.rotation.z = -Math.PI / 2; e.add(nac);
+      var lip = new T.Mesh(new T.TorusGeometry(0.262, 0.03, 12, 40), acc); // Einlauf hervorgehoben
+      lip.rotation.y = Math.PI / 2; lip.position.x = 0.46; e.add(lip);
       var intake = cyl(0.225, 0.225, 0.02, dark, 0.475, 0, 0); intake.rotation.z = -Math.PI / 2; e.add(intake);
       var fan = at(new T.Group(), 0.49, 0, 0);
       for (var i = 0; i < 12; i++) {
@@ -69,7 +107,7 @@
       var spinner = new T.Mesh(new T.ConeGeometry(0.06, 0.16, 16), M(C.body));
       spinner.rotation.z = -Math.PI / 2; spinner.position.x = 0.06; fan.add(spinner);
       e.add(fan); fans.push(fan);
-      var ex = new T.Mesh(new T.ConeGeometry(0.13, 0.36, 20), dark);
+      var ex = new T.Mesh(new T.ConeGeometry(0.13, 0.36, 20), acc);
       ex.rotation.z = Math.PI / 2; ex.position.x = -0.6; e.add(ex);
       e.add(box(0.55, 0.2, 0.06, body, -0.1, 0.3, 0)); // Pylon
       g.add(e);
@@ -91,6 +129,7 @@
     });
     g.add(box(0.34, 1.9, 0.34, body, -1.9, 1.25, 0));
     g.add(box(0.75, 0.24, 0.28, body, -1.5, 1.6, 0));
+    [1, -1].forEach(function (sg) { g.add(onSide(label('PHILIPS', 0.3, 0.075, C.philips), -1.9, 1.98, 0.172, sg)); });
 
     var R = 1.1, arm = at(new T.Group(), 0, 1.6, 0);
     var arc = new T.Mesh(new T.TorusGeometry(R, 0.085, 14, 64, Math.PI * 1.2), body);
@@ -163,10 +202,77 @@
     return g;
   }
 
+  /* ---------- Zug auf Gleis (DB InfraGO) ---------- */
+  function buildTrain() {
+    var g = new T.Group(), PI = Math.PI;
+    var skin = new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.1 });
+    var dark = M(C.dark, { roughness: 0.5 }), mid = M(C.mid), acc = accentMat();
+    var W = 0.31, H = 0.74, Rr = 0.16, NL = 1.3;
+    var ys = [0.085, 0.09, 0.15, 0.155, 0.33, 0.335, 0.5, 0.505]; // Kanten für Zierstreifen und Fensterband
+    function carGeo(L, nose) {
+      var s = new T.Shape();
+      s.moveTo(-W, 0); s.lineTo(W, 0);
+      ys.forEach(function (y) { s.lineTo(W, y); });
+      s.lineTo(W, H - Rr); s.absarc(W - Rr, H - Rr, Rr, 0, PI / 2, false);
+      s.lineTo(-W + Rr, H); s.absarc(-W + Rr, H - Rr, Rr, PI / 2, PI, false);
+      ys.slice().reverse().forEach(function (y) { s.lineTo(-W, y); });
+      var geo = new T.ExtrudeGeometry(s, { depth: L, steps: Math.round(L / 0.05), bevelEnabled: false, curveSegments: 8 });
+      geo.rotateY(PI / 2); // Länge entlang +X
+      var p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color();
+      for (var i = 0; i < p.count; i++) {
+        var x = p.getX(i), y = p.getY(i), t = nose ? Math.max(0, (x - (L - NL)) / NL) : 0, hex = 0xf4f6f9;
+        if (y > 0.088 && y < 0.152) hex = C.dbRed;
+        else if (y > 0.333 && y < 0.502 && x > 0.2 && x < L - (nose ? NL + 0.15 : 0.2)) hex = 0x161c28;
+        else if (nose && t > 0.3 && t < 0.72 && y > 0.503) hex = 0x161c28; // Frontscheibe
+        c.setHex(hex); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+        if (t > 0) { p.setY(i, y * (1 - 0.7 * Math.pow(t, 1.9))); p.setZ(i, p.getZ(i) * (1 - 0.5 * Math.pow(t, 2.4))); }
+      }
+      geo.setAttribute('color', new T.BufferAttribute(col, 3));
+      geo.computeVertexNormals();
+      return geo;
+    }
+    var train = at(new T.Group(), 0, 0.26, 0);
+    var head = at(new T.Mesh(carGeo(3.4, true), skin), -0.2, 0, 0);
+    [1, -1].forEach(function (sg) {
+      head.add(onSide(label('DB', 0.21, 0.145, '#ec0016', { bg: '#ffffff', frame: '#ec0016' }), 1.8, 0.242, W + 0.004, sg));
+    });
+    train.add(head);
+    train.add(at(new T.Mesh(carGeo(2.6, false), skin), -2.86, 0, 0));
+    train.add(box(0.08, 0.6, 0.5, dark, -0.23, 0.32, 0));     // Übergang
+    [0.07, -0.07].forEach(function (z) {                       // Spitzenlicht
+      train.add(at(new T.Mesh(new T.SphereGeometry(0.022, 10, 8), new T.MeshBasicMaterial({ color: 0xfff3c4 })), 3.185, 0.1, z));
+    });
+    g.add(train);
+    [2.1, 0.25, -0.75, -2.35].forEach(function (x) {           // Drehgestelle
+      g.add(box(0.62, 0.13, 0.5, dark, x, 0.2, 0));
+      [0.18, -0.18].forEach(function (dx) {
+        var w = cyl(0.1, 0.1, 0.56, mid, x + dx, 0.16, 0, 20); w.rotation.x = PI / 2; g.add(w);
+      });
+    });
+    g.add(box(1.1, 0.09, 0.54, dark, 1.2, 0.22, 0)); g.add(box(0.9, 0.09, 0.54, dark, -1.55, 0.22, 0));
+
+    [0.25, -0.25].forEach(function (z) { g.add(box(7.3, 0.06, 0.045, acc, 0.15, 0.03, z)); }); // Schienen
+    for (var x = -3.35; x < 3.7; x += 0.3) g.add(box(0.12, 0.04, 0.82, mid, x, -0.02, 0));     // Schwellen
+    g.add(box(7.5, 0.06, 1.2, dark, 0.15, -0.07, 0));                                           // Schotterbett
+
+    var V = function (x, y, z) { return new T.Vector3(x, y, z); };
+    g.add(rod(V(-3.5, 1.52, 0), V(3.8, 1.52, 0), 0.009, mid)); // Fahrdraht
+    [-3.1, 3.4].forEach(function (x) {                          // Oberleitungsmasten
+      g.add(box(0.07, 1.8, 0.07, mid, x, 0.82, -0.78));
+      g.add(rod(V(x, 1.66, -0.78), V(x, 1.53, 0.02), 0.014, mid));
+      g.add(rod(V(x, 1.3, -0.78), V(x, 1.53, -0.25), 0.012, mid));
+    });
+    g.add(rod(V(-1.75, 1.0, 0), V(-1.45, 1.24, 0), 0.014, dark)); // Stromabnehmer
+    g.add(rod(V(-1.45, 1.24, 0), V(-1.68, 1.49, 0), 0.014, dark));
+    g.add(box(0.05, 0.025, 0.42, dark, -1.68, 1.495, 0));
+    return g;
+  }
+
   /* ---------- Formula-Student-Rennwagen (HAWKS Racing) ---------- */
   function buildCar() {
     var g = new T.Group();
-    var body = M(C.body, { roughness: 0.35 }), dark = M(C.dark, { roughness: 0.7 }), mid = M(C.mid), acc = accentMat();
+    var body = M(C.hawks, { roughness: 0.3, metalness: 0.3 }), white = M(0xf4f6f9, { roughness: 0.35 });
+    var dark = M(0x10141d, { roughness: 0.6 }), mid = M(C.mid), acc = accentMat();
     var s = new T.Shape();
     [[2.0, 0.14], [2.0, 0.24], [0.95, 0.46], [0.5, 0.46], [0.42, 0.36], [-0.12, 0.36], [-0.2, 0.66],
       [-0.38, 0.7], [-1.3, 0.42], [-1.55, 0.3], [-1.55, 0.14]].forEach(function (p, i) {
@@ -183,15 +289,24 @@
     }
     geo.computeVertexNormals();
     g.add(new T.Mesh(geo, body));
-    g.add(at(new T.Mesh(new T.SphereGeometry(0.14, 20, 16), mid), 0.05, 0.52, 0)); // Helm
+    g.add(at(new T.Mesh(new T.SphereGeometry(0.14, 20, 16), white), 0.05, 0.52, 0)); // Helm
+    var stripe = box(1.06, 0.02, 0.1, white, 1.48, 0.4, 0); stripe.rotation.z = -0.207; g.add(stripe); // Nasenstreifen
+    g.add(box(0.14, 0.2, 0.3, white, 2.0, 0.2, 0));
     var hoop = new T.Mesh(new T.TorusGeometry(0.2, 0.035, 8, 24, Math.PI), dark);
     hoop.rotation.y = Math.PI / 2; hoop.position.set(-0.3, 0.68, 0); g.add(hoop);
-    [0.44, -0.44].forEach(function (z) { g.add(box(0.95, 0.24, 0.26, body, -0.45, 0.27, z)); });
+    [1, -1].forEach(function (sg) {
+      g.add(box(0.95, 0.24, 0.26, body, -0.45, 0.27, sg * 0.44));
+      var st = box(0.8, 0.045, 0.012, white, -0.45, 0.25, sg * 0.572); st.rotation.z = 0.16; g.add(st);
+      var st2 = box(0.5, 0.03, 0.012, white, -0.5, 0.19, sg * 0.572); st2.rotation.z = 0.16; g.add(st2);
+      g.add(onSide(label('HAWKS', 0.5, 0.14, '#ffffff', { italic: true }), -1.6, 0.97, 0.648, sg));
+      g.add(onSide(label('69', 0.26, 0.17, '#ffffff'), -1.6, 0.8, 0.648, sg));
+      g.add(onSide(label('HAWKS', 0.38, 0.1, '#ffffff', { italic: true }), 2.05, 0.19, 0.818, sg));
+    });
 
-    g.add(box(0.4, 0.04, 1.6, body, 2.05, 0.1, 0));           // Frontflügel
+    g.add(box(0.4, 0.04, 1.6, dark, 2.05, 0.1, 0));           // Frontflügel
     [0.8, -0.8].forEach(function (z) { g.add(box(0.44, 0.22, 0.03, dark, 2.05, 0.17, z)); });
-    g.add(box(0.45, 0.04, 1.25, body, -1.55, 0.92, 0));       // Heckflügel
-    var flap = box(0.3, 0.04, 1.25, body, -1.74, 1.03, 0); flap.rotation.z = -0.35; g.add(flap);
+    g.add(box(0.45, 0.04, 1.25, dark, -1.55, 0.92, 0));       // Heckflügel
+    var flap = box(0.3, 0.04, 1.25, dark, -1.74, 1.03, 0); flap.rotation.z = -0.35; g.add(flap);
     [0.63, -0.63].forEach(function (z) { g.add(box(0.62, 0.44, 0.03, dark, -1.6, 0.9, z)); });
     [0.2, -0.2].forEach(function (z) { g.add(box(0.06, 0.5, 0.06, dark, -1.45, 0.64, z)); });
 
@@ -268,6 +383,7 @@
   function initStages() {
     if (!T) return;
     var builders = { plane: [buildPlane, { float: true, yaw: -0.7 }], xray: [buildXray, { yaw: 0.75 }],
+      train: [buildTrain, { yaw: -0.6, fit: 6.2 }],
       track: [buildTrack, { yaw: 0.5, fit: 5.6 }], car: [buildCar, { yaw: -0.65, fit: 5.3 }] };
     document.querySelectorAll('[data-model]').forEach(function (el) {
       var b = builders[el.dataset.model]; if (!b) return;
